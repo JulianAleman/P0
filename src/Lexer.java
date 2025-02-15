@@ -17,7 +17,10 @@ public class Lexer {
     private char revision() {
         return position < input.length() ? input.charAt(position) : '\0';
     }
-
+    private char revisarsiguente() {
+        return (position + 1 < input.length()) ? input.charAt(position + 1) : '\0';
+    }
+    
     private char avanzar() {
         return position < input.length() ? input.charAt(position++) : '\0';
     }
@@ -55,7 +58,13 @@ public class Lexer {
             } else if (Character.isDigit(current)) {
                 String number = readNumber();
                 tokens.add(new Token(Type.NUMBER, number));
-            } else {
+            
+            } 
+            else if (current == ':' && revisarsiguente() == '=') { 
+            tokens.add(new Token(Type.ASSIGN, ":="));
+                avanzar(); 
+                avanzar(); 
+            }else {
                 switch (current) {
                     case '|': tokens.add(new Token(Type.PIPE, "|")); break;
                     case ':': tokens.add(new Token(Type.COLON, ":")); break;

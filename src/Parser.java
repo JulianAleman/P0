@@ -52,10 +52,10 @@ public class Parser {
         System.out.println("✅ Código válido: No se encontraron errores.");
     }
 
-    // Manejo de declaración de variables globales
+    
     private void parseVariableDeclaration() {
         while (currentToken != null && currentToken.getType() == Type.VARIABLE) {
-            advance(); // Consumir variables declaradas
+            advance(); 
         }
 
         if (!expect(Type.PIPE)) {
@@ -64,20 +64,36 @@ public class Parser {
     }
 
     private void parseProcedure() {
-        if (!expect(Type.VARIABLE)) {
-            error("Falta el nombre del procedimiento.");
-        }
-
-        if (expect(Type.COLON)) {
-            if (!expect(Type.VARIABLE)) {
-                error("Se esperaba un parámetro después de ':'.");
-            }
-        }
-
+        while (currentToken!=null && currentToken.getType()==Type.VARIABLE){
+			if (!expect(Type.VARIABLE)) {
+				error("Falta el nombre del procedimiento.");
+			}
+	
+			if (expect(Type.COLON)) {
+				if (!expect(Type.VARIABLE)) {
+					error("Se esperaba un parámetro después de ':'.");
+				}
+			}
+			
+		}
+		
         if (!expect(Type.OPEN_BRACKET)) {
             error("Se esperaba '[' después del procedimiento.");
         }
-
+		if (expect(Type.PIPE)) {  
+			while (expect(Type.VARIABLE) || expect(Type.COMMA)) {} 
+			if (!expect(Type.PIPE)) {
+				error("Falta cerrar '|' en la declaración de variables locales.");
+			}
+		}
+		while (currentToken!=null && currentToken.getType()==Type.VARIABLE) {
+			if(expect(Type.VARIABLE)){}
+			if (expect(Type.ASSIGN) ){}
+			if(expect(Type.VARIABLE)){}
+			if (expect(Type.PERIOD)) {}
+			else{}
+		}
+		
         while (currentToken != null && currentToken.getType() != Type.CLOSE_BRACKET) {
             parseStatement();
         }
