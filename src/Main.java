@@ -17,7 +17,7 @@ public class Main {
             System.out.println(token);
         }
         System.out.println("/////////////////////////////ERRORES/////////////////////////////////////////");
-        for (String token : lexer.getErrors()) {
+        for (Token token : lexer.getErrors()) {
             System.out.println(token);
         }
             //*Parser parser = new Parser(lexer.getTokens());

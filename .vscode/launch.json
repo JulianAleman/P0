@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Lexer",
+            "request": "launch",
+            "mainClass": "Lexer",
+            "projectName": "P0_5f892d6"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

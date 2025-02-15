@@ -1,61 +1,81 @@
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Lexer {
-    private  String entrada;
+    private final String input;
     private final List<Token> tokens = new ArrayList<>();
-    private final List<String> errors= new ArrayList<>();
+    private final List<Token> errorTokens = new ArrayList<>();
+    private int position = 0;
 
-    private static final Pattern patrones = Pattern.compile(
-        
-        "proc\\s+[a-zA-Z_][a-zA-Z0-9_]" +  
-    "\\|" + 
-    "goto(?![a-zA-Z])|move(?![a-zA-Z])|jump(?![a-zA-Z])|turn(?![a-zA-Z])|face(?![a-zA-Z])|put(?![a-zA-Z])|pick:(?![a-zA-Z])|" + 
-    "canPut(?![a-zA-Z])|canPick(?![a-zA-Z])|canMove(?![a-zA-Z])|canJump(?![a-zA-Z])|" + 
-    "toThe(?![a-zA-Z])|inDir(?![a-zA-Z])|ofType(?![a-zA-Z])|" + 
-    "if:(?![a-zA-Z])|then(?![a-zA-Z])|else(?![a-zA-Z])|while(?![a-zA-Z])|repeatTimes(?![a-zA-Z])|" + 
-    "not:(?![a-zA-Z])|facing(?![a-zA-Z])|blocked\\?(?![a-zA-Z])|" + 
-    "#(north|south|west|east|front|back|left|right|balloons|chips)(?![a-zA-Z])|" + 
-    "[a-zA-Z_][a-zA-Z0-9_]*|\\d+|[:{};,().=]", 
-    Pattern.CASE_INSENSITIVE
-
-    );
-
-    public Lexer(String imput){
-        this.entrada = imput;
-        analizador();
+    public Lexer(String input) {
+        this.input = input;
+        Analizador();
     }
 
-    private void analizador(){
-        Matcher comparacion= patrones.matcher(entrada);
-        int caracter_final= 0;
-        
-        while (caracter_final<entrada.length()){
-            comparacion.region(caracter_final, entrada.length());
+    private char revision() {
+        return position < input.length() ? input.charAt(position) : '\0';
+    }
 
-            if (comparacion.lookingAt()){
-                String tokenText= comparacion.group();
-                if (tokenText.trim().isEmpty()){
-                    caracter_final= comparacion.end();
-                    continue;
-                }
-                Type tipo= identifyType(tokenText);
-                if (tipo==null){
-                    tipo=Type.ERROR;
-                    tokens.add(new Token(tipo, tokenText));
-                } else {
-                    tokens.add(new Token(tipo, tokenText));
-                }
-                caracter_final= comparacion.end();
-            } 
-            else {
-                caracter_final++;
-            } 
+    private char avanzar() {
+        return position < input.length() ? input.charAt(position++) : '\0';
+    }
+
+    private void QuitarlosEspacios() {
+        while (Character.isWhitespace(revision())) {
+            avanzar();
         }
     }
+
+    private String readWord() {
+        StringBuilder sb = new StringBuilder();
+        while (Character.isLetter(revision()) || revision() == '#') {
+            sb.append(avanzar());
+        }
+        return sb.toString();
+    }
+
+    private String readNumber() {
+        StringBuilder sb = new StringBuilder();
+        while (Character.isDigit(revision())) {
+            sb.append(avanzar());
+        }
+        return sb.toString();
+    }
+
+    public void Analizador() {
+        while (position < input.length()) {
+            QuitarlosEspacios();
+            char current = revision();
+
+            if (Character.isLetter(current) || current == '#') {
+                String word = readWord();
+                tokens.add(new Token(identifyType(word), word));
+            } else if (Character.isDigit(current)) {
+                String number = readNumber();
+                tokens.add(new Token(Type.NUMBER, number));
+            } else {
+                switch (current) {
+                    case '|': tokens.add(new Token(Type.VARIABLE, "|")); break;
+                    case ':': tokens.add(new Token(Type.COLON, ":")); break;
+                    case '.': tokens.add(new Token(Type.PERIOD, ".")); break;
+                    case '(': tokens.add(new Token(Type.LPAREN, "(")); break;
+                    case ')': tokens.add(new Token(Type.RPAREN, ")")); break;
+                    case '{': tokens.add(new Token(Type.LBRACE, "{")); break;
+                    case '}': tokens.add(new Token(Type.RBRACE, "}")); break;
+                    case '[': tokens.add(new Token(Type.OPEN_BRACKET, "[")); break;
+                    case ']': tokens.add(new Token(Type.CLOSE_BRACKET, "]")); break;
+                    case ',': tokens.add(new Token(Type.COMMA, ",")); break;
+                    case ';': tokens.add(new Token(Type.SEMICOLON, ";")); break;
+                    case '=': tokens.add(new Token(Type.EQUALS, "=")); break;
+                    default: errorTokens.add(new Token(Type.ERROR, String.valueOf(current)));
+                }
+                avanzar();
+            }
+        }
+    }
+
     private Type identifyType(String text) {
         switch (text.toLowerCase()) {
             case "proc": return Type.PROC;
@@ -68,7 +88,7 @@ public class Lexer {
             case "for": return Type.FOR;
             case "times": return Type.TIMES;
             case "not": return Type.NOT;
-    
+
             case "move": return Type.MOVE;
             case "turn": return Type.TURN;
             case "face": return Type.FACE;
@@ -76,21 +96,19 @@ public class Lexer {
             case "drop": return Type.DROP;
             case "pick": return Type.PICK;
             case "grab": return Type.GRAB;
-            case "letgo": return Type.LET_GO;
             case "pop": return Type.POP;
             case "nop": return Type.NOP;
             case "put": return Type.PUT;
             case "#balloons": return Type.BALLOONS;
             case "#chips": return Type.CHIPS;
-    
+
             case "blocked?": return Type.BLOCKED_Q;
             case "facing?": return Type.FACING_Q;
-            case "zero?": return Type.ZERO_Q;
             case "canmove": return Type.CAN_MOVE;
             case "canjump": return Type.CAN_JUMP;
             case "canput": return Type.CAN_PUT;
             case "canpick": return Type.CAN_PICK;
-    
+
             case "#north": return Type.NORTH;
             case "#south": return Type.SOUTH;
             case "#west": return Type.WEST;
@@ -99,36 +117,19 @@ public class Lexer {
             case "back": return Type.BACK;
             case "left": return Type.LEFT;
             case "right": return Type.RIGHT;
-            case "indir": return Type.INDIR;   
+            case "indir": return Type.INDIR;
             case "tothe": return Type.TOTHE;
-            case ".": return Type.PERIOD;
-            case ":": return Type.COLON;   
-            case ":=": return Type.ASSIGN;
-            case ",": return Type.COMMA;
-            case ";": return Type.SEMICOLON;
-            case "{": return Type.LBRACE;
-            case "}": return Type.RBRACE;
-            case "(": return Type.LPAREN;
-            case ")": return Type.RPAREN;
-            case "=": return Type.EQUALS;
-            case "[": return Type.OPEN_BRACKET;
-            case "]": return Type.CLOSE_BRACKET;
             default:
-                if (Pattern.matches("\\d+", text)) return Type.NUMBER;
-                if (Pattern.matches("[a-zA-Z_][a-zA-Z0-9_]*", text)) return Type.VARIABLE;
+                if (Character.isLetter(text.charAt(0))) return Type.VARIABLE;
                 return Type.ERROR;
         }
     }
 
-    public List<Token> getTokens(){
-        return tokens; 
+    public List<Token> getTokens() {
+        return tokens;
     }
-
-    public List<String> getErrors(){
-        return errors;
+    public List<Token> getErrors(){
+        return errorTokens;
     }
-    
-    
 
 }
-
