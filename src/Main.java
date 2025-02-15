@@ -20,7 +20,7 @@ public class Main {
         for (Token token : lexer.getErrors()) {
             System.out.println(token);
         }
-            //*Parser parser = new Parser(lexer.getTokens());
-            //*parser.parse();
+            Parser parser = new Parser(lexer.getTokens());
+            parser.parse();
     }
 }

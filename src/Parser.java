@@ -1,119 +1,172 @@
+
 import java.util.List;
+import java.util.Iterator;
 
 public class Parser {
-	private List<Token> tokens;
-	private int posicion = 0;
+    private final List<Token> tokens;
+    private Iterator<Token> tokenIterator;
+    private Token currentToken;
 
-	public Parser(List<Token> tokens) {
-		this.tokens = tokens;
-	}
-	
-	private Token actual() {
-		if (posicion < tokens.size()) {
-			return tokens.get(posicion);
-		}
-		return null;
-	}
-	
-	private boolean aparece(String tipo_esp) {
-		Token x = actual();
-		if (x != null && x.tipo.equals(tipo_esp)) {
-			posicion++;
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean analisis() {
-		return estudiarBlocks() && estudiarVariables() && estudiarProcedures();
-		}
-	
-	private boolean estudiarBlocks() {
-		if (!aparece("LBRACKET")) {
-			return false;
-		}
-		
-		boolean instructs = false;
-		while (estudiarInstructions()) {
-			instructs = true;
-			if (!aparece("DOT")) {
-				return false;
+    public Parser(List<Token> tokens) {
+        this.tokens = tokens;
+        this.tokenIterator = tokens.iterator();
+        advance();
+    }
+
+    private void advance() {
+        if (tokenIterator.hasNext()) {
+            currentToken = tokenIterator.next();
+        } else {
+            currentToken = null;  // Fin de los tokens
+        }
+    }
+
+    private boolean expect(Type type) {
+        if (currentToken != null && currentToken.getType() == type) {
+            advance();
+            return true;
+        }
+        return false;
+    }
+
+    public void parse() {
+        // Manejar declaración de variables al inicio si hay '|'
+       
+
+        while (currentToken != null) {
+			if (expect(Type.PIPE)) {
+				parseVariableDeclaration();
 			}
-		}
-		
-		if (!aparece("RBRACKET")) {
-			return false;
-		}
-		
-		return instructs;
-	}
-	
-	private boolean estudiarVariables() {
-		boolean vars = false;
-		if (aparece("PIPE")) {
-			while (aparece("IDENTIFIER")) {
-				vars = true;
-			}
-		}
-		if (!aparece("PIPE")) {
-			vars = false;
-			}
-		return vars;
-	}
-	
-	private boolean estudiarProcedures() {
-		boolean procs = false;
-		while (aparece("PROC")) {
-			if (!aparece("IDENTIFIER")) {
-				return false;
-			}
-			procs = true;
-			if (!estudiarParameters() || !estudiarBlocks()) {
-				return false;
-			}
-		}
-		return procs;
-	}
-	
-	private boolean estudiarInstructions() {
-		return estudiarAssigments() || estudiarProcsCalls() || estudiarComands();
-	}
-	
-	private boolean estudiarParameters() {
-		boolean params = false;
-		while (!aparece("IDENTIFIER")) {
-			params = true;
-		}
-		return true;
-	}
-	
-	private boolean estudiarAssigments() {
-		if (aparece("IDENTIFIER")) {
-			if (!aparece("ASSIGN")) {
-				return false;
-			}
-			return aparece("NUMBER") || aparece("IDENTIFIER");
-		}
-		return false;
-	}
-	
-	private boolean estudiarProcsCalls() {
-		if (aparece("IDENTIFIER")) {
-			boolean parameters = false;
-			while (aparece("NUMBER") || aparece("IDENTIFIER") ) {
-				parameters = true;
-			}
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean estudiarComands() {
-		return aparece("MOVE") || aparece("TURN") || aparece("FACE") || aparece("PICK") || aparece("PUT");
-	}
-	
-	
-	
-	
-	
+            else if (expect(Type.PROC)) {
+                parseProcedure();
+            } else if (expect(Type.IF)) {
+                parseIfStatement();
+            } else if (expect(Type.WHILE)) {
+                parseWhileStatement();
+            } else if (expect(Type.VARIABLE)) {
+                parseProcedureCall();
+            } else {
+                error("Token inesperado: " + currentToken.getText());
+            }
+        }
+        System.out.println("✅ Código válido: No se encontraron errores.");
+    }
+
+    // Manejo de declaración de variables globales
+    private void parseVariableDeclaration() {
+        while (currentToken != null && currentToken.getType() == Type.VARIABLE) {
+            advance(); // Consumir variables declaradas
+        }
+
+        if (!expect(Type.PIPE)) {
+            error("Se esperaba '|' para cerrar la declaración de variables.");
+        }
+    }
+
+    private void parseProcedure() {
+        if (!expect(Type.VARIABLE)) {
+            error("Falta el nombre del procedimiento.");
+        }
+
+        if (expect(Type.COLON)) {
+            if (!expect(Type.VARIABLE)) {
+                error("Se esperaba un parámetro después de ':'.");
+            }
+        }
+
+        if (!expect(Type.OPEN_BRACKET)) {
+            error("Se esperaba '[' después del procedimiento.");
+        }
+
+        while (currentToken != null && currentToken.getType() != Type.CLOSE_BRACKET) {
+            parseStatement();
+        }
+
+        if (!expect(Type.CLOSE_BRACKET)) {
+            error("Se esperaba ']' al final del procedimiento.");
+        }
+    }
+
+    private void parseStatement() {
+        if (expect(Type.IF)) {
+            parseIfStatement();
+        } else if (expect(Type.WHILE)) {
+            parseWhileStatement();
+        } else if (expect(Type.REPEAT)) {
+            parseRepeatStatement();
+        } else if (expect(Type.VARIABLE)) {
+            parseProcedureCall();
+        } else {
+            error("Instrucción desconocida.");
+        }
+    }
+
+    private void parseProcedureCall() {
+        while (currentToken != null && (expect(Type.COLON) || expect(Type.NUMBER) || expect(Type.VARIABLE))) {}
+
+        if (!expect(Type.PERIOD)) {
+            error("Se esperaba '.' al final de la llamada al procedimiento.");
+        }
+    }
+
+    private void parseIfStatement() {
+        parseCondition();
+        if (!expect(Type.THEN)) {
+            error("Falta 'then:' después de la condición.");
+        }
+        parseBlock();
+
+        if (expect(Type.ELSE)) {
+            parseBlock();
+        }
+    }
+
+    private void parseWhileStatement() {
+        parseCondition();
+        if (!expect(Type.DO)) {
+            error("Falta 'do:' después de la condición.");
+        }
+        parseBlock();
+    }
+
+    private void parseRepeatStatement() {
+        if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+            error("Se esperaba un número o variable en 'repeatTimes:'.");
+        }
+        if (!expect(Type.REPEAT)) {
+            error("Falta 'repeat:' en la declaración del ciclo.");
+        }
+        parseBlock();
+    }
+
+    private void parseBlock() {
+        if (!expect(Type.OPEN_BRACKET)) {
+            error("Se esperaba '[' al inicio del bloque.");
+        }
+
+        while (currentToken != null && currentToken.getType() != Type.CLOSE_BRACKET) {
+            parseStatement();
+        }
+
+        if (!expect(Type.CLOSE_BRACKET)) {
+            error("Se esperaba ']' al final del bloque.");
+        }
+    }
+
+    private void parseCondition() {
+        if (!(expect(Type.FACING_Q) || expect(Type.BLOCKED_Q) || expect(Type.CAN_MOVE))) {
+            error("Condición inválida.");
+        }
+
+        if (expect(Type.COLON)) {
+            if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+                error("Se esperaba un número o variable después de ':'.");
+            }
+        }
+    }
+
+    private void error(String message) {
+        throw new RuntimeException("❌ Error de sintaxis: " + message + " en " + currentToken);
+    }
+
 }

@@ -57,7 +57,7 @@ public class Lexer {
                 tokens.add(new Token(Type.NUMBER, number));
             } else {
                 switch (current) {
-                    case '|': tokens.add(new Token(Type.VARIABLE, "|")); break;
+                    case '|': tokens.add(new Token(Type.PIPE, "|")); break;
                     case ':': tokens.add(new Token(Type.COLON, ":")); break;
                     case '.': tokens.add(new Token(Type.PERIOD, ".")); break;
                     case '(': tokens.add(new Token(Type.LPAREN, "(")); break;
