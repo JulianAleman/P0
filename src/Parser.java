@@ -122,6 +122,8 @@ public class Parser {
 			parseTurnStatement();
 		} else if (expect(Type.FACE)) {
 			parseFaceStatement();
+		} else if (expect(Type.PICK)) {
+			parsePickStatement();
 		}
 		else {
             error("Instrucción desconocida.");
@@ -181,7 +183,7 @@ public class Parser {
 	
 	private void parseGoToStatement() {
 		if (!expect(Type.COLON)) {
-			
+			error("");
 		    }
 		if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
 	        error("Se esperaba un número o variable después de 'goto:'.");
@@ -199,7 +201,7 @@ public class Parser {
 
 	private void parseTurnStatement() {
 		if (!expect(Type.COLON)) {
-			
+			error("");
 	    }
 		if (!expect(Type.LEFT) && !expect(Type.RIGHT) && !expect(Type.AROUND)) {
 			error("Se esperaba un número o variable después de 'goto:'.");
@@ -211,15 +213,31 @@ public class Parser {
 	
 	private void parseFaceStatement() {
 		if (!expect(Type.COLON)) {
-			
-	    }
+			error("");
+	    	}
 		if (!expect(Type.NORTH) && !expect(Type.EAST) && !expect(Type.WEST) && !expect(Type.SOUTH) ) {
         error("Se esperaba un número o variable después de 'goto:'.");
-		}
+			}
 		if (!expect(Type.PERIOD)) {
         error("Se esperaba '.' al final de la instrucción 'goto:'.");
-		}
+			}
 	}	
+	
+	private void parsePickStatement() {
+		if (!expect(Type.COLON)) {
+			error("");
+	    	}
+		if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+	        error("Se esperaba un número o variable después de 'goto:'.");
+			}
+		if (!expect(Type.OT)) {
+			error("");
+			}
+		if (!expect(Type.BALLOONS) && !expect(Type.CHIPS)) {
+			error("");
+		}
+		
+	}
 	
     private void parseProcedureCall() {
     	if (!expect(Type.VARIABLE)) {
@@ -245,7 +263,10 @@ public class Parser {
     }
 
     private void parseIfStatement() {
-        parseCondition();
+    	if (!expect(Type.COLON)) {
+            error("Se esperaba ':' después del nombre del procedimiento.");
+    	}
+    	parseCondition();
         if (!expect(Type.THEN)) {
             error("Falta 'then:' después de la condición.");
         }
@@ -257,7 +278,10 @@ public class Parser {
     }
 
     private void parseWhileStatement() {
-        parseCondition();
+    	if (!expect(Type.COLON)) {
+            error("Se esperaba ':' después del nombre del procedimiento.");
+    	}
+    	parseCondition();
         if (!expect(Type.DO)) {
             error("Falta 'do:' después de la condición.");
         }
@@ -265,7 +289,10 @@ public class Parser {
     }
 
     private void parseRepeatStatement() {
-        if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+    	if (!expect(Type.COLON)) {
+            error("Se esperaba ':' después del nombre del procedimiento.");
+    	}
+    	if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
             error("Se esperaba un número o variable en 'repeatTimes:'.");
         }
         if (!expect(Type.REPEAT)) {
