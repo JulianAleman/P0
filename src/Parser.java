@@ -103,24 +103,55 @@ public class Parser {
 
     private void parseStatement() {
         if (expect(Type.IF)) {
-            //parseIfStatement();
+            parseIfStatement();
         } else if (expect(Type.WHILE)) {
-            //parseWhileStatement();
+            parseWhileStatement();
         } else if (expect(Type.REPEAT)) {
-            //parseRepeatStatement();
+            parseRepeatStatement();
         } else if (expect(Type.VARIABLE)) {
-            //parseProcedureCall();
+            parseProcedureCall();
         } else if (expect(Type.PUT)){
 			parsePutStatement();
 		}  else if (expect(Type.GOTO)) {
 			parseGOTOStatement();
+		} else if (expect(Type.MOVE)){
+			parseMOVEStatement();
+		} else if (expect(Type.JUMP)){
+			parseJUMPtatement();
 		}
 		else {
             error("Instrucción desconocida.");
         }
     }
 
-	
+	private void parseMOVEStatement(){
+		if (expect(Type.COLON)){}
+		if (expect(Type.VARIABLE)||expect(Type.NUMBER)){}
+		if (expect(Type.WHERE)){
+			where();
+		} else if(expect(Type.INDIR)){
+			indir();
+		} else if(expect(Type.TOTHE)){
+			tothe();
+		}
+		if(expect(Type.PERIOD)){}
+
+	}
+	private void parseJUMPtatement(){
+
+	}
+	private void where(){
+		if (expect(Type.COLON)){}
+		if (expect(Type.VARIABLE)){}
+	}
+	private void indir(){
+		if (expect(Type.COLON)){}
+		if (expect(Type.NORTH) ||expect(Type.SOUTH)||expect(Type.WEST)||expect(Type.EAST)){}
+	}
+	private void tothe(){
+		if (expect(Type.COLON)){}
+		if (expect(Type.LEFT)||expect(Type.RIGHT)||expect(Type.FRONT)||expect(Type.BACK)){}
+	}
 	private void parsePutStatement(){
 		if (expect(Type.COLON)){}
 		if (expect(Type.VARIABLE)){}

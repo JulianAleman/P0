@@ -92,6 +92,7 @@ public class Lexer {
             case "then": return Type.THEN;
             case "else": return Type.ELSE;
             case "do": return Type.DO;
+            case "where": return Type.WHERE;
             case "while": return Type.WHILE;
             case "repeat": return Type.REPEAT;
             case "for": return Type.FOR;
@@ -123,12 +124,13 @@ public class Lexer {
             case "#south": return Type.SOUTH;
             case "#west": return Type.WEST;
             case "#east": return Type.EAST;
-            case "front": return Type.FRONT;
-            case "back": return Type.BACK;
-            case "left": return Type.LEFT;
-            case "right": return Type.RIGHT;
+            case "#front": return Type.FRONT;
+            case "#back": return Type.BACK;
+            case "#left": return Type.LEFT;
+            case "#right": return Type.RIGHT;
             case "indir": return Type.INDIR;
             case "tothe": return Type.TOTHE;
+            case "around": return Type.ROUND;
             default:
                 if (Character.isLetter(text.charAt(0))) return Type.VARIABLE;
                 return Type.ERROR;
