@@ -112,7 +112,9 @@ public class Parser {
             parseRepeatStatement();
         } else if (expect(Type.VARIABLE)) {
             parseProcedureCall();
-        } else {
+		
+        } 
+		else {
             error("Instrucción desconocida.");
         }
     }
