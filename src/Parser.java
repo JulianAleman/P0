@@ -138,7 +138,16 @@ public class Parser {
 
 	}
 	private void parseJUMPtatement(){
-
+		if (expect(Type.COLON)){}
+		if (expect(Type.VARIABLE)||expect(Type.NUMBER)){}
+		if (expect(Type.WHERE)){
+			where();
+		} else if(expect(Type.INDIR)){
+			indir();
+		} else if(expect(Type.TOTHE)){
+			tothe();
+		}
+		if(expect(Type.PERIOD)){}
 	}
 	private void where(){
 		if (expect(Type.COLON)){}

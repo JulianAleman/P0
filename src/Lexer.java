@@ -130,7 +130,7 @@ public class Lexer {
             case "#right": return Type.RIGHT;
             case "indir": return Type.INDIR;
             case "tothe": return Type.TOTHE;
-            case "around": return Type.ROUND;
+            case "around": return Type.AROUND;
             default:
                 if (Character.isLetter(text.charAt(0))) return Type.VARIABLE;
                 return Type.ERROR;
