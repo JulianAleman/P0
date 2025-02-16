@@ -20,8 +20,8 @@ proc complexAction: x [
 temp := x .
 if: facing? #north then: [ move: temp inDir: #north . ] else: [ turn: #left. move: temp inDir: #north . ]
 ]
-
+[
 goTo: 3 with: 3 .
 putChips: 2 .andBalloons: 1 .
 complexAction: 5 .
-
+]

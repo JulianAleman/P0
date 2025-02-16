@@ -45,6 +45,8 @@ public class Parser {
                 parseProcedureCall();
             } else if (expect(Type.GOTO)) {
 				parseGoToStatement();
+			} else if (currentToken.getType() == Type.OPEN_BRACKET){
+				parseBlock();
 			}else {
                 error("Token inesperado: " + currentToken.getText());
             }
