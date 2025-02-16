@@ -113,11 +113,15 @@ public class Parser {
         } else if (expect(Type.PUT)){
 			parsePutStatement();
 		}  else if (expect(Type.GOTO)) {
-			parseGOTOStatement();
+			parseGoToStatement();
 		} else if (expect(Type.MOVE)){
 			parseMOVEStatement();
 		} else if (expect(Type.JUMP)){
 			parseJUMPtatement();
+		} else if (expect(Type.TURN)) {
+			parseTurnStatement();
+		} else if (expect(Type.FACE)) {
+			parseFaceStatement();
 		}
 		else {
             error("Instrucción desconocida.");
@@ -175,7 +179,7 @@ public class Parser {
 		
 	}
 	
-	private void parseGOTOStatement() {
+	private void parseGoToStatement() {
 		if (!expect(Type.COLON)) {
 			
 		    }
@@ -192,6 +196,30 @@ public class Parser {
 	        error("Se esperaba '.' al final de la instrucción 'goto:'.");
 	    }
 	}
+
+	private void parseTurnStatement() {
+		if (!expect(Type.COLON)) {
+			
+	    }
+		if (!expect(Type.LEFT) && !expect(Type.RIGHT) && !expect(Type.AROUND)) {
+			error("Se esperaba un número o variable después de 'goto:'.");
+		}
+		if (!expect(Type.PERIOD)) {
+			error("Se esperaba '.' al final de la instrucción 'goto:'.");
+		}
+	}
+	
+	private void parseFaceStatement() {
+		if (!expect(Type.COLON)) {
+			
+	    }
+		if (!expect(Type.NORTH) && !expect(Type.EAST) && !expect(Type.WEST) && !expect(Type.SOUTH) ) {
+        error("Se esperaba un número o variable después de 'goto:'.");
+		}
+		if (!expect(Type.PERIOD)) {
+        error("Se esperaba '.' al final de la instrucción 'goto:'.");
+		}
+	}	
 	
     private void parseProcedureCall() {
     	if (!expect(Type.VARIABLE)) {
