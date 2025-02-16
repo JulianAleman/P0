@@ -112,13 +112,15 @@ public class Parser {
             //parseProcedureCall();
         } else if (expect(Type.PUT)){
 			parsePutStatement();
-		} else if (expect(Type.GOTO)) {
+		}  else if (expect(Type.GOTO)) {
 			parseGOTOStatement();
 		}
 		else {
             error("Instrucción desconocida.");
         }
     }
+
+	
 	private void parsePutStatement(){
 		if (expect(Type.COLON)){}
 		if (expect(Type.VARIABLE)){}
