@@ -103,14 +103,13 @@ public class Parser {
 
     private void parseStatement() {
         if (expect(Type.IF)) {
-            parseIfStatement();
+            //parseIfStatement();
         } else if (expect(Type.WHILE)) {
-            parseWhileStatement();
+            //parseWhileStatement();
         } else if (expect(Type.REPEAT)) {
-            parseRepeatStatement();
+            //parseRepeatStatement();
         } else if (expect(Type.VARIABLE)) {
-            parseProcedureCall();
-		
+            //parseProcedureCall();
         } else if (expect(Type.PUT)){
 			parsePutStatement();
 		}
@@ -119,9 +118,16 @@ public class Parser {
         }
     }
 	private void parsePutStatement(){
-		while(currentToken != null && expect(Type.COLON)|| expect(Type.VARIABLE) || expect(Type.OT)|| expect(Type.CHIPS)||expect(Type.BALLOONS))
-		
-		if (!expect(Type.PERIOD)){}
+		if (expect(Type.COLON)){}
+		if (expect(Type.VARIABLE)){}
+		if (expect(Type.OT)){}
+		if (expect(Type.COLON)){}
+		if (expect(Type.CHIPS)||expect(Type.BALLOONS)){}
+		if (expect(Type.PERIOD)){
+		}
+		else{
+			error("A");
+		}
 		
 	}
 	

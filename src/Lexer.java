@@ -98,7 +98,7 @@ public class Lexer {
             case "times": return Type.TIMES;
             case "not": return Type.NOT;
             case "and": return Type.AND;
-            case "OfType": return Type.OT;
+            case "oftype": return Type.OT;
             case "move": return Type.MOVE;
             case "turn": return Type.TURN;
             case "face": return Type.FACE;
