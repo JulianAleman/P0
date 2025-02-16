@@ -30,9 +30,7 @@ public class Parser {
     }
 
     public void parse() {
-        // Manejar declaración de variables al inicio si hay '|'
-       
-
+    
         while (currentToken != null) {
 			if (expect(Type.PIPE)) {
 				parseVariableDeclaration();
@@ -113,12 +111,20 @@ public class Parser {
         } else if (expect(Type.VARIABLE)) {
             parseProcedureCall();
 		
-        } 
+        } else if (expect(Type.PUT)){
+			parsePutStatement();
+		}
 		else {
             error("Instrucción desconocida.");
         }
     }
-
+	private void parsePutStatement(){
+		while(currentToken != null && expect(Type.COLON)|| expect(Type.VARIABLE) || expect(Type.OT)|| expect(Type.CHIPS)||expect(Type.BALLOONS))
+		
+		if (!expect(Type.PERIOD)){}
+		
+	}
+	
     private void parseProcedureCall() {
         while (currentToken != null && (expect(Type.COLON) || expect(Type.NUMBER) || expect(Type.VARIABLE))) {}
 

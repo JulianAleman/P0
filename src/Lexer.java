@@ -98,6 +98,7 @@ public class Lexer {
             case "times": return Type.TIMES;
             case "not": return Type.NOT;
             case "and": return Type.AND;
+            case "OfType": return Type.OT;
             case "move": return Type.MOVE;
             case "turn": return Type.TURN;
             case "face": return Type.FACE;
@@ -110,14 +111,14 @@ public class Lexer {
             case "put": return Type.PUT;
             case "#balloons": return Type.BALLOONS;
             case "#chips": return Type.CHIPS;
-
+            case "goTo": return Type.GOTO;
             case "blocked?": return Type.BLOCKED_Q;
             case "facing?": return Type.FACING_Q;
             case "canmove": return Type.CAN_MOVE;
             case "canjump": return Type.CAN_JUMP;
             case "canput": return Type.CAN_PUT;
             case "canpick": return Type.CAN_PICK;
-
+            case "with": return Type.WITH;
             case "#north": return Type.NORTH;
             case "#south": return Type.SOUTH;
             case "#west": return Type.WEST;
