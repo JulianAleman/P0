@@ -53,6 +53,8 @@ public class Parser {
     }
 
     
+
+
     private void parseVariableDeclaration() {
         while (currentToken != null && currentToken.getType() == Type.VARIABLE) {
             advance(); 
@@ -188,17 +190,21 @@ public class Parser {
 		if (!expect(Type.COLON)) {
 			error("");
 		    }
-		if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
-	        error("Se esperaba un número o variable después de 'goto:'.");
-			}
+		if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
+		else {
+			error("");
+		}
 		if (!expect(Type.WITH)) {
 			error("Falta 'with:' en la instrucción 'goto:'.");
 
 			}
-		if (expect(Type.COLON)){} 
-		if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
-			error("Se esperaba un número o variable después de 'with:'.");
-			}
+		if (!expect(Type.COLON)){
+			error("");
+		} 
+		if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
+		else {
+			error("");
+		}
 		if (!expect(Type.PERIOD)) {
 	        error("Se esperaba '.' al final de la instrucción 'goto:'.");
 	    }
@@ -208,8 +214,9 @@ public class Parser {
 		if (!expect(Type.COLON)) {
 			error("");
 	    }
-		if (!expect(Type.LEFT) && !expect(Type.RIGHT) && !expect(Type.AROUND)) {
-			error("Se esperaba un número o variable después de 'goto:'.");
+		if (expect(Type.LEFT) || expect(Type.RIGHT) || expect(Type.AROUND)) {}
+		else {
+			error("");
 		}
 		if (!expect(Type.PERIOD)) {
 			error("Se esperaba '.' al final de la instrucción 'goto:'.");
@@ -220,9 +227,10 @@ public class Parser {
 		if (!expect(Type.COLON)) {
 			error("");
 	    	}
-		if (!expect(Type.NORTH) && !expect(Type.EAST) && !expect(Type.WEST) && !expect(Type.SOUTH) ) {
-        error("Se esperaba un número o variable después de 'goto:'.");
-			}
+		if (expect(Type.NORTH) || expect(Type.EAST) || expect(Type.WEST) || expect(Type.SOUTH) ) {}
+		else {
+			error("");
+		}
 		if (!expect(Type.PERIOD)) {
         error("Se esperaba '.' al final de la instrucción 'goto:'.");
 			}
@@ -231,17 +239,18 @@ public class Parser {
 	private void parsePickStatement() {
 		if (!expect(Type.COLON)) {
 			error("");
-	    	}
-		if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
-	        error("Se esperaba un número o variable después de 'goto:'.");
-			}
-		if (!expect(Type.OT)) {
-			error("");
-			}
-		if (!expect(Type.BALLOONS) && !expect(Type.CHIPS)) {
+	    }
+		if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
+		else {
 			error("");
 		}
-		
+		if (!expect(Type.OT)) {
+			error("");
+		}
+		if (expect(Type.BALLOONS) || expect(Type.CHIPS)) {}
+		else {
+			error("");
+		}
 	}
 	
     private void parseProcedureCall() {
@@ -249,16 +258,18 @@ public class Parser {
         if (!expect(Type.COLON)) {
             error("Se esperaba ':' después del nombre del procedimiento.");
         }
-        if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
-            error("Se esperaba un número o variable después de ':'.");
-        }
+        if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
+        else {
+			error("");
+		}
         while (expect(Type.AND)) {
             if (!expect(Type.COLON)) {
                 error("Se esperaba ':' después de 'and'.");
             }
-            if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
-                error("Se esperaba un número o variable después de 'and:'.");
-            }
+            if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
+            else {
+    			error("");
+    		}
         }
         if (!expect(Type.PERIOD)) {
             error("Se esperaba '.' al final de la llamada al procedimiento.");
@@ -273,11 +284,15 @@ public class Parser {
         if (!expect(Type.THEN)) {
             error("Falta 'then:' después de la condición.");
         }
-		if(expect(Type.COLON)){}
+		if(!expect(Type.COLON)){
+			error("");
+		}
         parseBlock();
 
         if (expect(Type.ELSE)) {
-			if(expect(Type.COLON)){}
+			if(!expect(Type.COLON)){
+				error("");
+			}
             parseBlock();
         }
     }
@@ -290,7 +305,9 @@ public class Parser {
 			if (!expect(Type.DO)) {
 				error("Falta 'do' después de la condición en 'while:'.");
 			}
-			if(expect(Type.COLON)){}
+			if(!expect(Type.COLON)){
+				error("");
+			}
 			
 			parseBlock();
 		
@@ -300,9 +317,10 @@ public class Parser {
     	if (!expect(Type.COLON)) {
             error("Se esperaba ':' después del nombre del procedimiento.");
     	}
-    	if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
-            error("Se esperaba un número o variable en 'repeatTimes:'.");
-        }
+    	if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
+    	else {
+			error("");
+		}
         if (!expect(Type.REPEAT)) {
             error("Falta 'repeat:' en la declaración del ciclo.");
         }
@@ -325,26 +343,108 @@ public class Parser {
     }
 
     private void parseCondition() {
-        if (expect(Type.FACING_Q) || expect(Type.BLOCKED_Q) || expect(Type.CAN_MOVE)) {
-			if (expect(Type.COLON)) {
-				if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
-					error("Se esperaba un número o variable después de ':'.");
-				}
-				if (expect(Type.INDIR)) {  
-					if (!expect(Type.COLON)) {
-						error("Se esperaba ':' después de 'inDir'.");
-					}
-					if (!expect(Type.NORTH) && !expect(Type.SOUTH) && !expect(Type.EAST) && !expect(Type.WEST)) {
-						error("Se esperaba una dirección después de 'inDir:'.");
-					}
-				}
-				
-			}else if (expect(Type.NORTH) || expect(Type.SOUTH) || expect(Type.EAST) || expect(Type.WEST)) {  
-				return;
-			}
-		} else {
-			error("Condición inválida.");
+    	if (expect(Type.FACING_Q)) {
+            parseFacingCondition();
+        } else if (expect(Type.CAN_PUT)) {
+            parseCanPutCondition();
+        } else if (expect(Type.CAN_PICK)) {
+            parseCanPickCondition();
+        } else if (expect(Type.CAN_MOVE)) {
+            parseCanMoveCondition();
+        } else if (expect(Type.CAN_JUMP)){
+			parseCanJumpCondition();
+		} else if (expect(Type.CAN_JUMP)){
+			parseNotCondition();
 		}
+    }
+    	
+    
+    private void parseFacingCondition() {
+    	if (!expect(Type.COLON)) {
+    		error("");
+    	}
+    	if (expect(Type.NORTH) || expect(Type.EAST) || expect(Type.WEST) || expect(Type.SOUTH)) {}
+    	else {
+			error("");
+		}
+    		
+    }
+    
+    private void parseCanPutCondition() {
+    	if (!expect(Type.COLON)) {
+    		error("");
+    	}
+    	if (expect(Type.VARIABLE) || expect(Type.NUMBER)) {}
+    	else {
+			error("");
+		}
+    	if (!expect(Type.OT)) {
+    		error("");
+    	}
+    	if (expect(Type.BALLOONS) || expect(Type.CHIPS)) {}
+    	else {
+			error("");
+		}
+    }
+
+    private void parseCanPickCondition() {
+    	if (!expect(Type.COLON)) {
+    		error("");
+    	}
+    	if (expect(Type.VARIABLE) || expect(Type.NUMBER)) {}
+    	else {
+			error("");
+		}
+    	if (!expect(Type.OT)) {
+    		error("");
+    	}
+    	if (expect(Type.BALLOONS) || expect(Type.CHIPS)) {}
+    	else {
+			error("");
+		}
+    }
+
+    private void parseCanMoveCondition() {
+    	if (!expect(Type.COLON)){
+    		error("");
+    	}
+		if (expect(Type.VARIABLE)||expect(Type.NUMBER)){}
+		else {
+			error("");
+		}
+		if(expect(Type.INDIR)){
+			indir();
+		} else if(expect(Type.TOTHE)){
+			tothe();
+		}
+		else {
+			error("");
+		}
+    }
+
+    private void parseCanJumpCondition() {
+    	if (!expect(Type.COLON)){
+    		error("");
+    	}
+		if (expect(Type.VARIABLE)||expect(Type.NUMBER)){}
+		else {
+			error("");
+		}
+		if(expect(Type.INDIR)){
+			indir();
+		} else if(expect(Type.TOTHE)){
+			tothe();
+		}
+		else {
+			error("");
+		}
+    }
+    
+    private void parseNotCondition () {
+    	if (!expect(Type.COLON)){
+    		error("");
+    	}
+    	parseCondition();
     }
 
     private void error(String message) {
