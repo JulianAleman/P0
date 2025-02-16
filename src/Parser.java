@@ -49,6 +49,7 @@ public class Parser {
                 error("Token inesperado: " + currentToken.getText());
             }
         }
+        System.out.println("True");
         System.out.println("✅ Código válido: No se encontraron errores.");
     }
 
@@ -448,7 +449,8 @@ public class Parser {
     }
 
     private void error(String message) {
-        throw new RuntimeException("❌ Error de sintaxis: " + message + " en " + currentToken);
+    	System.out.println("False");
+    	throw new RuntimeException("❌ Error de sintaxis: " + message + " en " + currentToken);
     }
-
+   
 }
