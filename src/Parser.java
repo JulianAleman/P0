@@ -43,7 +43,9 @@ public class Parser {
                 parseWhileStatement();
             } else if (expect(Type.VARIABLE)) {
                 parseProcedureCall();
-            } else {
+            } else if (expect(Type.GOTO)) {
+				parseGoToStatement();
+			}else {
                 error("Token inesperado: " + currentToken.getText());
             }
         }
@@ -124,8 +126,9 @@ public class Parser {
 			parseFaceStatement();
 		} else if (expect(Type.PICK)) {
 			parsePickStatement();
-		}
-		else {
+		}else if (expect(Type.NOP)) {  
+			expect(Type.PERIOD);  
+		}else {
             error("Instrucción desconocida.");
         }
     }
@@ -190,7 +193,9 @@ public class Parser {
 			}
 		if (!expect(Type.WITH)) {
 			error("Falta 'with:' en la instrucción 'goto:'.");
-			} 
+
+			}
+		if (expect(Type.COLON)){} 
 		if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
 			error("Se esperaba un número o variable después de 'with:'.");
 			}
@@ -240,9 +245,7 @@ public class Parser {
 	}
 	
     private void parseProcedureCall() {
-    	if (!expect(Type.VARIABLE)) {
-            error("Se esperaba el nombre de un procedimiento.");
-        }
+    	
         if (!expect(Type.COLON)) {
             error("Se esperaba ':' después del nombre del procedimiento.");
         }
@@ -270,22 +273,27 @@ public class Parser {
         if (!expect(Type.THEN)) {
             error("Falta 'then:' después de la condición.");
         }
+		if(expect(Type.COLON)){}
         parseBlock();
 
         if (expect(Type.ELSE)) {
+			if(expect(Type.COLON)){}
             parseBlock();
         }
     }
 
     private void parseWhileStatement() {
-    	if (!expect(Type.COLON)) {
-            error("Se esperaba ':' después del nombre del procedimiento.");
-    	}
-    	parseCondition();
-        if (!expect(Type.DO)) {
-            error("Falta 'do:' después de la condición.");
-        }
-        parseBlock();
+			if (!expect(Type.COLON)) {
+				error("Se esperaba ':' después de 'while'.");
+			}
+			parseCondition();
+			if (!expect(Type.DO)) {
+				error("Falta 'do' después de la condición en 'while:'.");
+			}
+			if(expect(Type.COLON)){}
+			
+			parseBlock();
+		
     }
 
     private void parseRepeatStatement() {
@@ -299,6 +307,7 @@ public class Parser {
             error("Falta 'repeat:' en la declaración del ciclo.");
         }
         parseBlock();
+	
     }
 
     private void parseBlock() {
@@ -316,15 +325,26 @@ public class Parser {
     }
 
     private void parseCondition() {
-        if (!(expect(Type.FACING_Q) || expect(Type.BLOCKED_Q) || expect(Type.CAN_MOVE))) {
-            error("Condición inválida.");
-        }
-
-        if (expect(Type.COLON)) {
-            if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
-                error("Se esperaba un número o variable después de ':'.");
-            }
-        }
+        if (expect(Type.FACING_Q) || expect(Type.BLOCKED_Q) || expect(Type.CAN_MOVE)) {
+			if (expect(Type.COLON)) {
+				if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+					error("Se esperaba un número o variable después de ':'.");
+				}
+				if (expect(Type.INDIR)) {  
+					if (!expect(Type.COLON)) {
+						error("Se esperaba ':' después de 'inDir'.");
+					}
+					if (!expect(Type.NORTH) && !expect(Type.SOUTH) && !expect(Type.EAST) && !expect(Type.WEST)) {
+						error("Se esperaba una dirección después de 'inDir:'.");
+					}
+				}
+				
+			}else if (expect(Type.NORTH) || expect(Type.SOUTH) || expect(Type.EAST) || expect(Type.WEST)) {  
+				return;
+			}
+		} else {
+			error("Condición inválida.");
+		}
     }
 
     private void error(String message) {

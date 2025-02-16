@@ -112,7 +112,7 @@ public class Lexer {
             case "put": return Type.PUT;
             case "#balloons": return Type.BALLOONS;
             case "#chips": return Type.CHIPS;
-            case "goTo": return Type.GOTO;
+            case "goto": return Type.GOTO;
             case "blocked?": return Type.BLOCKED_Q;
             case "facing?": return Type.FACING_Q;
             case "canmove": return Type.CAN_MOVE;
