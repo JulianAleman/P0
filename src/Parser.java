@@ -113,6 +113,8 @@ public class Parser {
 		
         } else if (expect(Type.PUT)){
 			parsePutStatement();
+		} else if (expect(Type.GOTO)) {
+			parseGOTOStatement();
 		}
 		else {
             error("Instrucción desconocida.");
@@ -125,9 +127,42 @@ public class Parser {
 		
 	}
 	
+	private void parseGOTOStatement() {
+		if (!expect(Type.COLON)) {
+			
+		    }
+		if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+	        error("Se esperaba un número o variable después de 'goto:'.");
+			}
+		if (!expect(Type.WITH)) {
+			error("Falta 'with:' en la instrucción 'goto:'.");
+			} 
+		if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+			error("Se esperaba un número o variable después de 'with:'.");
+			}
+		if (!expect(Type.PERIOD)) {
+	        error("Se esperaba '.' al final de la instrucción 'goto:'.");
+	    }
+	}
+	
     private void parseProcedureCall() {
-        while (currentToken != null && (expect(Type.COLON) || expect(Type.NUMBER) || expect(Type.VARIABLE))) {}
-
+    	if (!expect(Type.VARIABLE)) {
+            error("Se esperaba el nombre de un procedimiento.");
+        }
+        if (!expect(Type.COLON)) {
+            error("Se esperaba ':' después del nombre del procedimiento.");
+        }
+        if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+            error("Se esperaba un número o variable después de ':'.");
+        }
+        while (expect(Type.AND)) {
+            if (!expect(Type.COLON)) {
+                error("Se esperaba ':' después de 'and'.");
+            }
+            if (!expect(Type.NUMBER) && !expect(Type.VARIABLE)) {
+                error("Se esperaba un número o variable después de 'and:'.");
+            }
+        }
         if (!expect(Type.PERIOD)) {
             error("Se esperaba '.' al final de la llamada al procedimiento.");
         }
