@@ -33,7 +33,7 @@ public class Lexer {
 
     private String readWord() {
         StringBuilder sb = new StringBuilder();
-        while (Character.isLetter(revision()) || revision() == '#') {
+        while (Character.isLetter(revision()) || revision() == '#' || revision()=='?') {
             sb.append(avanzar());
         }
         return sb.toString();

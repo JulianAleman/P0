@@ -1,10 +1,27 @@
-|nom x y one|
+|x y one|
 
 proc putChips: n andBalloons: m [
-  |c, b|
-  c := n .
-  b := m .
-  move: 1 inDir: #north .
+|c b|
+c := n .
+b := m .
+put : c ofType: #chips . put: b ofType: #balloons .
 ]
 
+proc goNorth [
+while: canMove: 1 inDir: #north do: [ move: 1 inDir: #north . ]
+]
+
+proc goWest [
+if: canMove: 1 inDir: #west then: [ move: 1 inDir: #west . ] else: [ nop . ]
+]
+
+proc complexAction: x [
+|temp|
+temp := x .
+if: facing? #north then: [ move: temp inDir: #north . ] else: [ turn: #north . move: temp inDir: #north . ]
+]
+
+goTo: 3 with: 3 .
+putChips: 2 andBalloons: 1 .
+complexAction: 5 .
 
