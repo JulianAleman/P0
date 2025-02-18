@@ -50,7 +50,6 @@ public class Parser {
             }
         }
         System.out.println("True");
-        System.out.println("✅ Código válido: No se encontraron errores.");
     }
 
     
@@ -62,31 +61,31 @@ public class Parser {
         }
 
         if (!expect(Type.PIPE)) {
-            error("Se esperaba '|' para cerrar la declaración de variables.");
+            error("");
         }
     }
 
     private void parseProcedure() {
         while (currentToken!=null && currentToken.getType()==Type.VARIABLE){
 			if (!expect(Type.VARIABLE)) {
-				error("Falta el nombre del procedimiento.");
+				error("");
 			}
 	
 			if (expect(Type.COLON)) {
 				if (!expect(Type.VARIABLE)) {
-					error("Se esperaba un parámetro después de ':'.");
+					error("");
 				}
 			}
 			
 		}
 		
         if (!expect(Type.OPEN_BRACKET)) {
-            error("Se esperaba '[' después del procedimiento.");
+            error("");
         }
 		if (expect(Type.PIPE)) {  
 			while (expect(Type.VARIABLE) || expect(Type.COMMA)) {} 
 			if (!expect(Type.PIPE)) {
-				error("Falta cerrar '|' en la declaración de variables locales.");
+				error("");
 			}
 		}
 		while (currentToken!=null && currentToken.getType()==Type.VARIABLE) {
@@ -102,7 +101,7 @@ public class Parser {
         }
 
         if (!expect(Type.CLOSE_BRACKET)) {
-            error("Se esperaba ']' al final del procedimiento.");
+            error("");
         }
     }
 
@@ -132,7 +131,7 @@ public class Parser {
 		}else if (expect(Type.NOP)) {  
 			expect(Type.PERIOD);  
 		}else {
-            error("Instrucción desconocida.");
+            error("");
         }
     }
 
@@ -162,27 +161,28 @@ public class Parser {
 		if(expect(Type.PERIOD)){}
 	}
 	private void where(){
-		if (expect(Type.COLON)){}
-		if (expect(Type.VARIABLE)){}
+		if (expect(Type.COLON)){error("");}
+		if (expect(Type.VARIABLE)){error("");}
 	}
 	private void indir(){
-		if (expect(Type.COLON)){}
+		if (!expect(Type.COLON)){error("");}
 		if (expect(Type.NORTH) ||expect(Type.SOUTH)||expect(Type.WEST)||expect(Type.EAST)){}
+		else{error("");}
 	}
 	private void tothe(){
 		if (expect(Type.COLON)){}
 		if (expect(Type.LEFT)||expect(Type.RIGHT)||expect(Type.FRONT)||expect(Type.BACK)){}
+		else{error("");}
 	}
 	private void parsePutStatement(){
-		if (expect(Type.COLON)){}
-		if (expect(Type.VARIABLE)){}
-		if (expect(Type.OT)){}
-		if (expect(Type.COLON)){}
+		if (!expect(Type.COLON)){error("");}
+		if (!expect(Type.VARIABLE)){error("");}
+		if (!expect(Type.OT)){error("");}
+		if (!expect(Type.COLON)){error("");}
 		if (expect(Type.CHIPS)||expect(Type.BALLOONS)){}
-		if (expect(Type.PERIOD)){
-		}
-		else{
-			error("A");
+		else{error("");}
+		if (!expect(Type.PERIOD)){
+			error("");
 		}
 		
 	}
@@ -196,7 +196,7 @@ public class Parser {
 			error("");
 		}
 		if (!expect(Type.WITH)) {
-			error("Falta 'with:' en la instrucción 'goto:'.");
+			error("");
 
 			}
 		if (!expect(Type.COLON)){
@@ -207,7 +207,7 @@ public class Parser {
 			error("");
 		}
 		if (!expect(Type.PERIOD)) {
-	        error("Se esperaba '.' al final de la instrucción 'goto:'.");
+	        error("");
 	    }
 	}
 
@@ -220,7 +220,7 @@ public class Parser {
 			error("");
 		}
 		if (!expect(Type.PERIOD)) {
-			error("Se esperaba '.' al final de la instrucción 'goto:'.");
+			error("");
 		}
 	}
 	
@@ -233,7 +233,7 @@ public class Parser {
 			error("");
 		}
 		if (!expect(Type.PERIOD)) {
-        error("Se esperaba '.' al final de la instrucción 'goto:'.");
+        error("");
 			}
 	}	
 	
@@ -257,7 +257,7 @@ public class Parser {
     private void parseProcedureCall() {
     	
         if (!expect(Type.COLON)) {
-            error("Se esperaba ':' después del nombre del procedimiento.");
+            error("");
         }
         if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
         else {
@@ -265,7 +265,7 @@ public class Parser {
 		}
         while (expect(Type.AND)) {
             if (!expect(Type.COLON)) {
-                error("Se esperaba ':' después de 'and'.");
+                error("");
             }
             if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
             else {
@@ -273,17 +273,17 @@ public class Parser {
     		}
         }
         if (!expect(Type.PERIOD)) {
-            error("Se esperaba '.' al final de la llamada al procedimiento.");
+            error("");
         }
     }
 
     private void parseIfStatement() {
     	if (!expect(Type.COLON)) {
-            error("Se esperaba ':' después del nombre del procedimiento.");
+            error("");
     	}
     	parseCondition();
         if (!expect(Type.THEN)) {
-            error("Falta 'then:' después de la condición.");
+            error("");
         }
 		if(!expect(Type.COLON)){
 			error("");
@@ -300,11 +300,11 @@ public class Parser {
 
     private void parseWhileStatement() {
 			if (!expect(Type.COLON)) {
-				error("Se esperaba ':' después de 'while'.");
+				error("");
 			}
 			parseCondition();
 			if (!expect(Type.DO)) {
-				error("Falta 'do' después de la condición en 'while:'.");
+				error("");
 			}
 			if(!expect(Type.COLON)){
 				error("");
@@ -316,14 +316,14 @@ public class Parser {
 
     private void parseRepeatStatement() {
     	if (!expect(Type.COLON)) {
-            error("Se esperaba ':' después del nombre del procedimiento.");
+            error("");
     	}
     	if (expect(Type.NUMBER) || expect(Type.VARIABLE)) {}
     	else {
 			error("");
 		}
         if (!expect(Type.REPEAT)) {
-            error("Falta 'repeat:' en la declaración del ciclo.");
+            error("");
         }
         parseBlock();
 	
@@ -331,7 +331,7 @@ public class Parser {
 
     private void parseBlock() {
         if (!expect(Type.OPEN_BRACKET)) {
-            error("Se esperaba '[' al inicio del bloque.");
+            error("");
         }
 
         while (currentToken != null && currentToken.getType() != Type.CLOSE_BRACKET) {
@@ -339,7 +339,7 @@ public class Parser {
         }
 
         if (!expect(Type.CLOSE_BRACKET)) {
-            error("Se esperaba ']' al final del bloque.");
+            error("");
         }
     }
 
@@ -449,8 +449,7 @@ public class Parser {
     }
 
     private void error(String message) {
-    	System.out.println("False");
-    	throw new RuntimeException("❌ Error de sintaxis: " + message + " en " + currentToken);
+    	throw new RuntimeException("False!!");
     }
    
 }
